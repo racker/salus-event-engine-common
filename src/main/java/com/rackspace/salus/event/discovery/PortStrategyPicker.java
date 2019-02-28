@@ -42,9 +42,11 @@ class PortStrategyPicker implements EventEnginePicker {
   }
 
   @Override
-  public EngineInstance pickRecipient(String tenantId, String collectionName) {
+  public EngineInstance pickRecipient(String tenantId, String resourceId,
+                                      String collectionName) {
     final HashCode hashCode = hashFunction.newHasher()
         .putString(tenantId, StandardCharsets.UTF_8)
+        .putString(resourceId, StandardCharsets.UTF_8)
         .putString(collectionName, StandardCharsets.UTF_8)
         .hash();
 

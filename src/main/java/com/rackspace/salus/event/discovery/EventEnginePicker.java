@@ -29,10 +29,11 @@ public interface EventEnginePicker {
    * Locates an instance that is "assigned" the given aspects. This most likely uses a consistent
    * hash strategy picking one of the known instances.
    * @param tenantId the tenant of the object to be evaulated
+   * @param resourceId the resource ID of the data to be routed
    * @param collectionName the collection name (aka measurement) of the object
    * @return the host and port of the instance selected
    */
-  EngineInstance pickRecipient(String tenantId, String collectionName);
+  EngineInstance pickRecipient(String tenantId, String resourceId, String collectionName);
 
   /**
    * Provides all known instances for operations that need to access all
