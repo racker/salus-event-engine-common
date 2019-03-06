@@ -51,8 +51,8 @@ public interface EventEnginePicker {
   EngineInstance pickUsingPartition(int partition);
 
   /**
-   * Computes if a move of assigned engine instance partition is needed for the gjven
-   * inputs going from one partition cound to another partition count.
+   * Computes if a move of assigned engine instance partition is needed for the given
+   * inputs going from one partition count to another partition count.
    * @param fromPartitions the prior partition count
    * @param toPartitions the new partition count
    * @return a non-null move description if a move is needed
