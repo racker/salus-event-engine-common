@@ -23,7 +23,7 @@
   <groupId>com.rackspace.salus</groupId>
   <artifactId>salus-event-engine-common</artifactId>
   <version>0.1.0-SNAPSHOT</version>
-  
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -87,5 +87,13 @@
 
     </plugins>
   </build>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>snapshots</id>
+      <name>artifactory-artifactory-0-snapshots</name>
+      <url>https://salus-artifactory.dev.monplat.rackspace.net/artifactory/libs-snapshot-local</url>
+    </snapshotRepository>
+  </distributionManagement>
 
 </project>
