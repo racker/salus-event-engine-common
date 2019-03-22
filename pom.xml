@@ -57,6 +57,25 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.rackspace.salus</groupId>
+      <artifactId>salus-telemetry-model</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>spring-boot-starter-data-jpa</artifactId>
+          <groupId>org.springframework.boot</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>hibernate-jpamodelgen</artifactId>
+          <groupId>org.hibernate</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>salus-common</artifactId>
+          <groupId>com.rackspace.salus</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
 
   </dependencies>
 
