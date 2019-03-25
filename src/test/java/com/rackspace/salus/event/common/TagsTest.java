@@ -20,8 +20,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import com.rackspace.salus.telemetry.model.LabelNamespaces;
-import java.util.Arrays;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -32,12 +34,17 @@ public class TagsTest {
 
   @Parameters
   public static Collection<String> namespaces() {
-    return Arrays.asList(
-        Tags.MONITORING_SYSTEM,
-        Tags.RESOURCE_ID,
-        Tags.RESOURCE_LABEL,
-        Tags.TENANT
-    );
+    final List<String> namespaces = new ArrayList<>();
+
+    for (Field field : Tags.class.getDeclaredFields()) {
+      try {
+        namespaces.add((String) field.get(Tags.class));
+      } catch (IllegalAccessException e) {
+        throw new IllegalStateException(e);
+      }
+    }
+
+    return namespaces;
   }
 
   final String tag;
