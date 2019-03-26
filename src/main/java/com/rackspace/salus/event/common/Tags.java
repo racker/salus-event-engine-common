@@ -27,7 +27,7 @@ public class Tags {
   public static final String RESOURCE_ID = qualify("resourceId");
   public static final String RESOURCE_LABEL = qualify("resourceLabel");
   public static final String MONITORING_SYSTEM = qualify("monitoringSystem");
-  public static final String TENANT = qualify("tenant");
+  public static final String QUALIFIED_ACCOUNT = qualify("qualifiedAccount");
 
   private static String qualify(String resourceId) {
     return applyNamespace(EVENT_ENGINE_TAGS, resourceId);
