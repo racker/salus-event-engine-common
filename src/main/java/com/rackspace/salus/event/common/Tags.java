@@ -16,14 +16,22 @@
 
 package com.rackspace.salus.event.common;
 
+import static com.rackspace.salus.telemetry.model.LabelNamespaces.EVENT_ENGINE_TAGS;
+import static com.rackspace.salus.telemetry.model.LabelNamespaces.applyNamespace;
+
 /**
  * Contains common tags applied to metrics sent to kapacitor. Kapacitor and the others in the
  * TICK stack use the term "tag", which is equivalent to our use of the term "label".
  */
 public class Tags {
-  public static final String RESOURCE_ID = "resourceId";
-  public static final String ACCOUNT = "account";
-  public static final String ACCOUNT_TYPE = "accountType";
-  public static final String RESOURCE_LABEL = "resourceLabel";
-  public static final String MONITORING_SYSTEM = "monitoringSystem";
+  public static final String RESOURCE_ID = qualify("resourceId");
+  public static final String RESOURCE_LABEL = qualify("resourceLabel");
+  public static final String MONITORING_SYSTEM = qualify("monitoringSystem");
+  public static final String QUALIFIED_ACCOUNT = qualify("qualifiedAccount");
+
+  private static String qualify(String resourceId) {
+    return applyNamespace(EVENT_ENGINE_TAGS, resourceId);
+  }
+
+  private Tags() {}
 }
