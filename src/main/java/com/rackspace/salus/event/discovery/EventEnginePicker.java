@@ -21,7 +21,6 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import org.springframework.util.Assert;
 
 /**
  * This interface is implemented by configurable strategies that are responsible for locating an
@@ -43,7 +42,8 @@ public abstract class EventEnginePicker {
    * @param collectionName the collection name (aka measurement) of the object
    * @return the host and port of the instance selected
    */
-  public abstract EngineInstance pickRecipient(String tenantId, String resourceId, String collectionName);
+  public abstract EngineInstance pickRecipient(String tenantId, String resourceId, String collectionName)
+      throws NoPartitionsAvailableException;
 
   /**
    * Provides all known instances for operations that need to access all
@@ -52,9 +52,12 @@ public abstract class EventEnginePicker {
   public abstract Collection<EngineInstance> pickAll();
 
 
-  protected int choosePartition(String tenantId, String resourceId, String collectionName) {
+  protected int pickPartition(String tenantId, String resourceId, String collectionName)
+      throws NoPartitionsAvailableException {
     final int partitions = getPartitions();
-    Assert.state(partitions > 0, "");
+    if (partitions <= 0) {
+      throw new NoPartitionsAvailableException();
+    }
 
     final HashCode hashCode = hashFunction.newHasher()
         .putString(tenantId, StandardCharsets.UTF_8)

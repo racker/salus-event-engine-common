@@ -39,8 +39,8 @@ class PortStrategyPicker extends EventEnginePicker {
 
   @Override
   public EngineInstance pickRecipient(String tenantId, String resourceId,
-                                      String collectionName) {
-    final int choice = choosePartition(tenantId, resourceId, collectionName);
+                                      String collectionName) throws NoPartitionsAvailableException {
+    final int choice = pickPartition(tenantId, resourceId, collectionName);
 
     final int port = properties.getStartingPort() + choice;
 

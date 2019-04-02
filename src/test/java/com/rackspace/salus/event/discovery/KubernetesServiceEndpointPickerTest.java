@@ -21,6 +21,8 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 import com.google.common.hash.Hashing;
@@ -82,11 +84,20 @@ public class KubernetesServiceEndpointPickerTest {
   }
 
   @Test
-  public void testInstanceDown() throws IOException {
+  public void testInstanceDown() throws IOException, NoPartitionsAvailableException {
     picker.handleWatchResponse(parseResponse("added"));
+
+    {
+      // simulate routing for two different resources
+      final EngineInstance chosen1 = picker.pickRecipient("t-1", "r-1", "cpu");
+      final EngineInstance chosen2 = picker.pickRecipient("t-1", "r-2", "cpu");
+      // and confirm the hashing spread them out
+      assertThat(chosen1, not(is(chosen2)));
+    }
+
     picker.handleWatchResponse(parseResponse("modified-down")); // kapacitor-0 went down
 
-    final Collection<EngineInstance> allInstances = picker.pickAll();
+    Collection<EngineInstance> allInstances = picker.pickAll();
     assertThat(allInstances, hasSize(1));
     assertThat(
         allInstances,
@@ -97,6 +108,15 @@ public class KubernetesServiceEndpointPickerTest {
             )
         )
     );
+
+    {
+      // simulate routing again for the same resources as before
+      final EngineInstance chosen1 = picker.pickRecipient("t-1", "r-1", "cpu");
+      final EngineInstance chosen2 = picker.pickRecipient("t-1", "r-2", "cpu");
+      // but confirm they now hash onto the one instance left
+      assertThat(chosen1, is(chosen2));
+    }
+
   }
 
   @Test
@@ -106,6 +126,11 @@ public class KubernetesServiceEndpointPickerTest {
 
     final Collection<EngineInstance> allInstances = picker.pickAll();
     assertThat(allInstances, hasSize(0));
+  }
+
+  @Test(expected = NoPartitionsAvailableException.class)
+  public void testNoPartitionsAvailable() throws NoPartitionsAvailableException {
+    picker.pickRecipient("t-1", "r-1", "cpu"); //fails
   }
 
   private Response<V1Endpoints> parseResponse(String name) throws IOException {

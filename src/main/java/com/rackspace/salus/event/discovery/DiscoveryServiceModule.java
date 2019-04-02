@@ -42,14 +42,17 @@ public class DiscoveryServiceModule {
     // default kafka topic partitioning uses murmur, so that seems like a good choice here too
     final HashFunction hashFunction = Hashing.murmur3_128(properties.getHashFunctionSeed());
 
-    if (properties.getPortStrategy() != null) {
+    if (properties.getPortStrategy() != null
+        && properties.getKubernetesStrategy() == null) {
       return new PortStrategyPicker(properties.getPortStrategy(), hashFunction);
-    } else if (properties.getKubernetesStrategy() != null) {
+    } else if (properties.getKubernetesStrategy() != null
+        && properties.getPortStrategy() == null) {
       return new KubernetesServiceEndpointPicker(properties.getKubernetesStrategy(), hashFunction,
-          eventEngineTaskExecutor());
+          eventEngineTaskExecutor()
+      );
     } else {
       throw new IllegalStateException(
-          "One of the pickers must be configured...only PortStrategy at this time");
+          "One and only one of the pickers must be configured");
 
     }
   }

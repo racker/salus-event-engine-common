@@ -57,9 +57,10 @@ public class KubernetesServiceEndpointPicker extends EventEnginePicker implement
   }
 
   @Override
-  public EngineInstance pickRecipient(String tenantId, String resourceId, String collectionName) {
+  public EngineInstance pickRecipient(String tenantId, String resourceId, String collectionName)
+      throws NoPartitionsAvailableException {
     synchronized (engineInstances) {
-      final int choice = choosePartition(tenantId, resourceId, collectionName);
+      final int choice = pickPartition(tenantId, resourceId, collectionName);
 
       return engineInstances.get(choice);
     }
