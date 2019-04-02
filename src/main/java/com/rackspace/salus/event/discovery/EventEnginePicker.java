@@ -16,14 +16,24 @@
 
 package com.rackspace.salus.event.discovery;
 
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hashing;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import org.springframework.util.Assert;
 
 /**
  * This interface is implemented by configurable strategies that are responsible for locating an
  * instance of the event engine (Kapacitor) for the given aspects of the current object to
  * be processed.
  */
-public interface EventEnginePicker {
+public abstract class EventEnginePicker {
+  private final HashFunction hashFunction;
+
+  protected EventEnginePicker(HashFunction hashFunction) {
+    this.hashFunction = hashFunction;
+  }
 
   /**
    * Locates an instance that is "assigned" the given aspects. This most likely uses a consistent
@@ -33,29 +43,28 @@ public interface EventEnginePicker {
    * @param collectionName the collection name (aka measurement) of the object
    * @return the host and port of the instance selected
    */
-  EngineInstance pickRecipient(String tenantId, String resourceId, String collectionName);
+  public abstract EngineInstance pickRecipient(String tenantId, String resourceId, String collectionName);
 
   /**
    * Provides all known instances for operations that need to access all
    * @return a collection of host-port pairs for all known instances
    */
-  Collection<EngineInstance> pickAll();
+  public abstract Collection<EngineInstance> pickAll();
 
-  /**
-   * Resolves the {@link EngineInstance} for the requested partition. This is useful for
-   * resolving the host and port to contact given the persisted knowledge about an assigned
-   * partition.
-   * @param partition the engine partition
-   * @return the full engine instance details for the given partition
-   */
-  EngineInstance pickUsingPartition(int partition);
 
-  /**
-   * Computes if a move of assigned engine instance partition is needed for the given
-   * inputs going from one partition count to another partition count.
-   * @param fromPartitions the prior partition count
-   * @param toPartitions the new partition count
-   * @return a non-null move description if a move is needed
-   */
-  EngineMove computeMove(String tenantId, String collectionName, int fromPartitions, int toPartitions);
+  protected int choosePartition(String tenantId, String resourceId, String collectionName) {
+    final int partitions = getPartitions();
+    Assert.state(partitions > 0, "");
+
+    final HashCode hashCode = hashFunction.newHasher()
+        .putString(tenantId, StandardCharsets.UTF_8)
+        .putString(resourceId, StandardCharsets.UTF_8)
+        .putString(collectionName, StandardCharsets.UTF_8)
+        .hash();
+
+    return Hashing.consistentHash(hashCode, partitions);
+  }
+
+  protected abstract int getPartitions();
+
 }

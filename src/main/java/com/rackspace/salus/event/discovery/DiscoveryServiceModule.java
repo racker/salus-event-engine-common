@@ -22,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @Configuration
 @EnableConfigurationProperties(DiscoveryProperties.class)
@@ -41,12 +43,23 @@ public class DiscoveryServiceModule {
     final HashFunction hashFunction = Hashing.murmur3_128(properties.getHashFunctionSeed());
 
     if (properties.getPortStrategy() != null) {
-      return new PortStrategyPicker(properties, hashFunction);
+      return new PortStrategyPicker(properties.getPortStrategy(), hashFunction);
+    } else if (properties.getKubernetesStrategy() != null) {
+      return new KubernetesServiceEndpointPicker(properties.getKubernetesStrategy(), hashFunction,
+          eventEngineTaskExecutor());
     } else {
       throw new IllegalStateException(
           "One of the pickers must be configured...only PortStrategy at this time");
 
     }
+  }
+
+  private TaskExecutor eventEngineTaskExecutor() {
+    final ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+    taskExecutor.setThreadNamePrefix("eventEngine-");
+    taskExecutor.initialize();
+    taskExecutor.setDaemon(true);
+    return taskExecutor;
   }
 
 }

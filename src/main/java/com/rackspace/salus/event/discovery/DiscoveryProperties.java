@@ -16,6 +16,7 @@
 
 package com.rackspace.salus.event.discovery;
 
+import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -23,16 +24,26 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 public class DiscoveryProperties {
 
-  int partitions = 1;
-
   int hashFunctionSeed = 0;
 
   PortStrategy portStrategy;
 
+  KubernetesStrategy kubernetesStrategy;
+
   @Data
   public static class PortStrategy {
+    int partitions = 1;
+
     int startingPort = 9192;
 
     String host = "localhost";
+  }
+
+  @Data
+  public static class KubernetesStrategy {
+    String apiUrl = "https://kubernetes";
+    @NotEmpty
+    String serviceName = "kapacitor";
+    int readTimeout = 20;
   }
 }
