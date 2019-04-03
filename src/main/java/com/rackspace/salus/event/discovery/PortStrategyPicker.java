@@ -16,12 +16,9 @@
 
 package com.rackspace.salus.event.discovery;
 
-import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hashing;
 import com.google.common.net.HostAndPort;
 import com.rackspace.salus.event.discovery.DiscoveryProperties.PortStrategy;
-import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -31,74 +28,39 @@ import java.util.stream.IntStream;
  * number. The configured host will be used for all of the computed {@link HostAndPort} results.
  */
 @SuppressWarnings("UnstableApiUsage")
-class PortStrategyPicker implements EventEnginePicker {
+class PortStrategyPicker extends EventEnginePicker {
 
-  private final HashFunction hashFunction;
-  private final DiscoveryProperties properties;
+  private final PortStrategy properties;
 
-  PortStrategyPicker(DiscoveryProperties properties, HashFunction hashFunction) {
+  PortStrategyPicker(PortStrategy properties, HashFunction hashFunction) {
+    super(hashFunction);
     this.properties = properties;
-    this.hashFunction = hashFunction;
   }
 
   @Override
   public EngineInstance pickRecipient(String tenantId, String resourceId,
-                                      String collectionName) {
-    final HashCode hashCode = hashFunction.newHasher()
-        .putString(tenantId, StandardCharsets.UTF_8)
-        .putString(resourceId, StandardCharsets.UTF_8)
-        .putString(collectionName, StandardCharsets.UTF_8)
-        .hash();
+                                      String collectionName) throws NoPartitionsAvailableException {
+    final int choice = pickPartition(tenantId, resourceId, collectionName);
 
-    final int choice = Hashing.consistentHash(hashCode, properties.getPartitions());
+    final int port = properties.getStartingPort() + choice;
 
-    final int port = properties.getPortStrategy().getStartingPort() + choice;
-
-    return new EngineInstance(properties.getPortStrategy().getHost(), port, choice);
+    return new EngineInstance(properties.getHost(), port, choice);
   }
 
   @Override
   public Collection<EngineInstance> pickAll() {
-    final PortStrategy portStrategy = properties.getPortStrategy();
-
     return IntStream.range(0, properties.getPartitions())
         .mapToObj(partition -> new EngineInstance(
-            portStrategy.getHost(),
-            partition+ portStrategy.getStartingPort(),
+            properties.getHost(),
+            partition+ properties.getStartingPort(),
             partition
         ))
         .collect(Collectors.toList());
   }
 
   @Override
-  public EngineInstance pickUsingPartition(int partition) {
-    final PortStrategy portStrategy = properties.getPortStrategy();
-    return new EngineInstance(
-        portStrategy.getHost(),
-        portStrategy.getStartingPort() + partition,
-        partition
-    );
+  protected int getPartitions() {
+    return properties.getPartitions();
   }
 
-  @Override
-  public EngineMove computeMove(String tenantId, String collectionName, int fromPartitions,
-                                int toPartitions) {
-    final HashCode hashCode = hashFunction.newHasher()
-        .putString(tenantId, StandardCharsets.UTF_8)
-        .putString(collectionName, StandardCharsets.UTF_8)
-        .hash();
-
-    final int fromChoice = Hashing.consistentHash(hashCode, fromPartitions);
-    final int toChoice = Hashing.consistentHash(hashCode, toPartitions);
-
-    if (fromChoice != toChoice) {
-      return new EngineMove(
-          pickUsingPartition(fromChoice),
-          pickUsingPartition(toChoice)
-      );
-    }
-    else {
-      return null;
-    }
-  }
 }
