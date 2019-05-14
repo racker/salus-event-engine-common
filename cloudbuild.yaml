@@ -14,7 +14,6 @@ steps:
   - id: PULL_DOWN_CACHE
     waitFor: ['-']
     name: gcr.io/cloud-builders/gsutil
-    dir: /root
     entrypoint: bash
     args:
     - -c
@@ -23,21 +22,14 @@ steps:
         gsutil cp gs://${_GCS_CACHE_BUCKET}/${_SALUS_PROJECT}-m2-cache.tar.gz /tmp/m2-cache.tar.gz &&
         tar -xzf /tmp/m2-cache.tar.gz
       ) || echo 'Cache not found'
-    volumes:
-    - name: user.home
-      path: /root
 
-  - id: DEPLOY
+  - id: VERIFY
     name: 'gcr.io/cloud-builders/mvn'
-    args: ['deploy', '-s', '.mvn/settings.xml']
-    volumes:
-    - name: user.home
-      path: /root
+    args: ['verify', '-s', '.mvn/settings.xml']
 
   # Saves the files to the GCS cache.
   - id: PUSH_UP_CACHE
     name: gcr.io/cloud-builders/gsutil
-    dir: /root
     entrypoint: bash
     # Caches the local Maven repository.
     args:
@@ -46,7 +38,4 @@ steps:
       set -ex
       tar -czf /tmp/m2-cache.tar.gz .m2 &&
       gsutil cp /tmp/m2-cache.tar.gz gs://${_GCS_CACHE_BUCKET}/${_SALUS_PROJECT}-m2-cache.tar.gz
-    volumes:
-    - name: user.home
-      path: /root
 
