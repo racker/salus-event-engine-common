@@ -23,21 +23,13 @@ steps:
         gsutil cp gs://${_GCS_CACHE_BUCKET}/${_SALUS_PROJECT}-m2-cache.tar.gz /tmp/m2-cache.tar.gz &&
         tar -xzf /tmp/m2-cache.tar.gz
       ) || echo 'Cache not found'
-    volumes:
-    - name: user.home
-      path: /root
 
-  - id: VERIFY
+  - id: DEPLOY
     name: 'gcr.io/cloud-builders/mvn'
-    args: ['-B', 'verify', '-s', '.mvn/settings.xml']
-    volumes:
-    - name: user.home
-      path: /root
+    args: ['deploy', '-s', '.mvn/settings.xml']
 
   # Saves the files to the GCS cache.
   - id: PUSH_UP_CACHE
-    waitFor:
-    - VERIFY
     name: gcr.io/cloud-builders/gsutil
     dir: /root
     entrypoint: bash
@@ -51,5 +43,4 @@ steps:
     volumes:
     - name: user.home
       path: /root
-
 
