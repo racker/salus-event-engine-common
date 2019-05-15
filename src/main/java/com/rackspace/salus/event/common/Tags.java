@@ -24,10 +24,10 @@ import static com.rackspace.salus.telemetry.model.LabelNamespaces.applyNamespace
  * TICK stack use the term "tag", which is equivalent to our use of the term "label".
  */
 public class Tags {
-  public static final String RESOURCE_ID = qualify("resourceId");
-  public static final String RESOURCE_LABEL = qualify("resourceLabel");
-  public static final String MONITORING_SYSTEM = qualify("monitoringSystem");
-  public static final String QUALIFIED_ACCOUNT = qualify("qualifiedAccount");
+  public static final String RESOURCE_ID = qualify("resource_id");
+  public static final String RESOURCE_LABEL = qualify("resource_label");
+  public static final String MONITORING_SYSTEM = qualify("monitoring_system");
+  public static final String QUALIFIED_ACCOUNT = qualify("qualified_account");
 
   private static String qualify(String resourceId) {
     return applyNamespace(EVENT_ENGINE_TAGS, resourceId);
