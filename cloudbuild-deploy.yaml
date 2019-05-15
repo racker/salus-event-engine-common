@@ -23,6 +23,9 @@ steps:
         gsutil cp gs://${_GCS_CACHE_BUCKET}/${_SALUS_PROJECT}-m2-cache.tar.gz /tmp/m2-cache.tar.gz &&
         tar -xzf /tmp/m2-cache.tar.gz
       ) || echo 'Cache not found'
+    volumes:
+    - name: user.home
+      path: /root
 
   - id: DEPLOY
     name: 'gcr.io/cloud-builders/mvn'
