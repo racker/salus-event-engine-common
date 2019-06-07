@@ -41,7 +41,18 @@ public class DiscoveryProperties {
 
   @Data
   public static class KubernetesStrategy {
+
+    /**
+     * Specifies the endpoint where the Kubernetes API can be access. The default is the typical
+     * URL that works for pods deployed within the cluster to be queried. The service account
+     * that accesses the API will need to be given get, list, and watch verb access to the resources
+     * endpoints and services.
+     * Can also be set with the env variable EVENT_DISCOVERY_KUBERNETESSTRATEGY_APIURL
+     */
     String apiUrl = "https://kubernetes";
+    /**
+     * Can also be set with the env variable EVENT_DISCOVERY_KUBERNETESSTRATEGY_SERVICENAME
+     */
     @NotEmpty
     String serviceName = "kapacitor";
     int readTimeout = 20;
