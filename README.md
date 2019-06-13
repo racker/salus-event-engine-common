@@ -1,4 +1,4 @@
-This module provides common services for the Event Engine subsystem. 
+This module provides common services for the Event Engine subsystem.
 
 Primarily it provides the `EventEnginePicker` declared in the `discovery` package. The
 `EventEnginePicker` or more generally the discovery services provides a configurable means
@@ -20,9 +20,9 @@ clusterIP: None
 Environment variables of Event Engine Management and Ingest pods need to have
 - `EVENT_DISCOVERY_KUBERNETESSTRATEGY_APIURL`: typically `https://kubernetes` for in-cluster access
 - `EVENT_DISCOVERY_KUBERNETESSTRATEGY_SERVICENAME`: the name of the kapacitor headless service
-  described above
+  described above (ie. kapacitorsvc)
 
-The Event Engine application pods (ingest and management) will need a 
+The Event Engine application pods (ingest and management) will need a
 `serviceAccountName` assigned that has the following role:
 
 ```yaml
@@ -30,20 +30,35 @@ kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: salus-development
-  name: endpoint-watcher
+  name: endpoint-watcher-role
 rules:
   - apiGroups: [""] # "" indicates the core API group
     resources:
       - services
       - endpoints
     verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: endpoint-watcher-role-binding
+  namespace: salus-development
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: salus-development
+roleRef:
+  kind: Role
+  name: endpoint-watcher-role
+  apiGroup: rbac.authorization.k8s.io
+
 ```
 
 ## Example Kubernetes deployment
 
 For testing of the `KubernetesServiceEndpointPicker`, an example Kubernetes manifest file is
 provided at `examples/kube-deployment/kapacitor.yml`. It is expected to use this manifest with
-a local cluster running in Docker for Desktop. 
+a local cluster running in Docker for Desktop.
 
 The kapacitor statefulset and service can be deployed using:
 
