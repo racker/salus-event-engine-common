@@ -22,6 +22,11 @@ Environment variables of Event Engine Management and Ingest pods need to have
 - `EVENT_DISCOVERY_KUBERNETESSTRATEGY_SERVICENAME`: the name of the kapacitor headless service
   described above (ie. kapacitorsvc)
 
+there is also an optional parameter for
+- `EVENT_DISCOVERY_KUBERNETESSTRATEGY_NAMESPACE:` this defaults to `salus-development` and can be
+  used as a property for kubernetes api requests.
+
+
 The Event Engine application pods (ingest and management) will need a
 `serviceAccountName` assigned that has the following role:
 
