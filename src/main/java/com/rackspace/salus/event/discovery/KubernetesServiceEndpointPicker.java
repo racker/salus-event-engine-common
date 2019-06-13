@@ -126,7 +126,7 @@ public class KubernetesServiceEndpointPicker extends EventEnginePicker implement
     return Watch.createWatch(
             apiClient,
             api.listNamespacedEndpointsCall(
-                "default",
+                properties.getNamespace(),
                 false, null, null,
                 String.format("metadata.name=%s", properties.getServiceName()),
                 null, null, null, null, true, null, null
