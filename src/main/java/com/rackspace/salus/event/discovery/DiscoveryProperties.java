@@ -56,5 +56,8 @@ public class DiscoveryProperties {
     @NotEmpty
     String serviceName = "kapacitor";
     int readTimeout = 20;
+
+    @NotEmpty
+    String namespace = "salus-development";
   }
 }
