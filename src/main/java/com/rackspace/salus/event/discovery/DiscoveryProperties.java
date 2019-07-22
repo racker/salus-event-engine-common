@@ -20,7 +20,7 @@ import javax.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("event.discovery")
+@ConfigurationProperties("salus.event.discovery")
 @Data
 public class DiscoveryProperties {
 
