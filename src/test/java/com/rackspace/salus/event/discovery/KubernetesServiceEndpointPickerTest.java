@@ -72,11 +72,11 @@ public class KubernetesServiceEndpointPickerTest {
         allInstances,
         contains(
             allOf(
-                hasProperty("host", equalTo("kapacitor-0")),
+                hasProperty("host", equalTo("kapacitor-0.kapacitor")),
                 hasProperty("port", equalTo(9092))
             ),
             allOf(
-                hasProperty("host", equalTo("kapacitor-1")),
+                hasProperty("host", equalTo("kapacitor-1.kapacitor")),
                 hasProperty("port", equalTo(9092))
             )
         )
@@ -103,7 +103,7 @@ public class KubernetesServiceEndpointPickerTest {
         allInstances,
         contains(
             allOf(
-                hasProperty("host", equalTo("kapacitor-1")),
+                hasProperty("host", equalTo("kapacitor-1.kapacitor")),
                 hasProperty("port", equalTo(9092))
             )
         )

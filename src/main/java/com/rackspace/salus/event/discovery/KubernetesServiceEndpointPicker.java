@@ -165,7 +165,7 @@ public class KubernetesServiceEndpointPicker extends EventEnginePicker implement
 
             engineInstances.add(
                 new EngineInstance(
-                    endpointAddress.getHostname(),
+                    String.join(".", endpointAddress.getHostname(), properties.getServiceName()),
                     port,
                     engineInstances.size()
                 )
