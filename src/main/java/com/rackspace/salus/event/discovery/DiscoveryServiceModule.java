@@ -20,6 +20,7 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
@@ -30,10 +31,13 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 public class DiscoveryServiceModule {
 
   private final DiscoveryProperties properties;
+  private final ConfigurableApplicationContext applicationContext;
 
   @Autowired
-  public DiscoveryServiceModule(DiscoveryProperties properties) {
+  public DiscoveryServiceModule(DiscoveryProperties properties,
+                                ConfigurableApplicationContext applicationContext) {
     this.properties = properties;
+    this.applicationContext = applicationContext;
   }
 
   @SuppressWarnings("UnstableApiUsage")
@@ -48,7 +52,7 @@ public class DiscoveryServiceModule {
     } else if (properties.getKubernetesStrategy() != null
         && properties.getPortStrategy() == null) {
       return new KubernetesServiceEndpointPicker(properties.getKubernetesStrategy(), hashFunction,
-          eventEngineTaskExecutor()
+          eventEngineTaskExecutor(), applicationContext
       );
     } else {
       throw new IllegalStateException(

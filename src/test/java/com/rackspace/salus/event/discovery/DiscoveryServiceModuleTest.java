@@ -22,8 +22,12 @@ import com.rackspace.salus.event.discovery.DiscoveryProperties.KubernetesStrateg
 import com.rackspace.salus.event.discovery.DiscoveryProperties.PortStrategy;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.StaticApplicationContext;
 
 public class DiscoveryServiceModuleTest {
+
+  ConfigurableApplicationContext applicationContext = new StaticApplicationContext();
 
   @Test
   public void testPortStrategyConfigured() {
@@ -31,7 +35,7 @@ public class DiscoveryServiceModuleTest {
     DiscoveryProperties properties = new DiscoveryProperties();
     properties.setPortStrategy(portStrategy);
 
-    final DiscoveryServiceModule discoveryServiceModule = new DiscoveryServiceModule(properties);
+    final DiscoveryServiceModule discoveryServiceModule = new DiscoveryServiceModule(properties, applicationContext);
     final EventEnginePicker picker = discoveryServiceModule.eventEnginePicker();
 
     assertThat(picker, Matchers.instanceOf(PortStrategyPicker.class));
@@ -43,7 +47,7 @@ public class DiscoveryServiceModuleTest {
     DiscoveryProperties properties = new DiscoveryProperties();
     properties.setKubernetesStrategy(kubernetesStrategy);
 
-    final DiscoveryServiceModule discoveryServiceModule = new DiscoveryServiceModule(properties);
+    final DiscoveryServiceModule discoveryServiceModule = new DiscoveryServiceModule(properties, applicationContext);
     final EventEnginePicker picker = discoveryServiceModule.eventEnginePicker();
 
     assertThat(picker, Matchers.instanceOf(KubernetesServiceEndpointPicker.class));
@@ -57,7 +61,7 @@ public class DiscoveryServiceModuleTest {
     properties.setPortStrategy(portStrategy);
     properties.setKubernetesStrategy(kubernetesStrategy);
 
-    final DiscoveryServiceModule discoveryServiceModule = new DiscoveryServiceModule(properties);
+    final DiscoveryServiceModule discoveryServiceModule = new DiscoveryServiceModule(properties, applicationContext);
 
     discoveryServiceModule.eventEnginePicker(); // should fail
   }
@@ -66,7 +70,7 @@ public class DiscoveryServiceModuleTest {
   public void testNoneConfigured() {
     DiscoveryProperties properties = new DiscoveryProperties();
 
-    final DiscoveryServiceModule discoveryServiceModule = new DiscoveryServiceModule(properties);
+    final DiscoveryServiceModule discoveryServiceModule = new DiscoveryServiceModule(properties, applicationContext);
 
     discoveryServiceModule.eventEnginePicker(); // should fail
   }
