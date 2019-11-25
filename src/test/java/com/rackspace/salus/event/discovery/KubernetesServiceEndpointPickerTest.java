@@ -38,11 +38,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.util.StreamUtils;
 
 public class KubernetesServiceEndpointPickerTest {
+  ConfigurableApplicationContext applicationContext = new StaticApplicationContext();
 
   public static final Type WATCH_ENDPOINTS_TYPE = new TypeToken<Response<V1Endpoints>>() {
   }.getType();
@@ -55,7 +58,8 @@ public class KubernetesServiceEndpointPickerTest {
     picker = new KubernetesServiceEndpointPicker(
         new KubernetesStrategy(),
         Hashing.murmur3_128(),
-        new SyncTaskExecutor()
+        new SyncTaskExecutor(),
+        applicationContext
     );
     jsonParser = new JSON();
   }

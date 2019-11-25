@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.core.task.TaskExecutor;
 
@@ -43,6 +44,7 @@ public class KubernetesServiceEndpointPicker extends EventEnginePicker implement
 
   private final KubernetesStrategy properties;
   private final TaskExecutor taskExecutor;
+  private final ConfigurableApplicationContext applicationContext;
   private ApiClient apiClient;
 
   // NOTE: access to this MUST be synchronized
@@ -50,10 +52,12 @@ public class KubernetesServiceEndpointPicker extends EventEnginePicker implement
 
   KubernetesServiceEndpointPicker(DiscoveryProperties.KubernetesStrategy properties,
                                   @SuppressWarnings("UnstableApiUsage") HashFunction hashFunction,
-                                  TaskExecutor taskExecutor) {
+                                  TaskExecutor taskExecutor,
+                                  ConfigurableApplicationContext applicationContext) {
     super(hashFunction);
     this.properties = properties;
     this.taskExecutor = taskExecutor;
+    this.applicationContext = applicationContext;
   }
 
   @Override
@@ -115,14 +119,20 @@ public class KubernetesServiceEndpointPicker extends EventEnginePicker implement
 
       log.debug("Finished watching");
 
-    } catch (ApiException|RuntimeException e) {
-      log.warn("Failed during endpoints watch", e);
-      taskExecutor.execute(this::watchEndpoint);
+    } catch (ApiException e) {
+      log.error("API call failed during endpoints watch, response={}", e.getResponseBody(), e);
+      applicationContext.close();
+    } catch (Exception e) {
+      log.error("Failed during endpoints watch", e);
+      applicationContext.close();
     }
 
   }
 
   private Watch<V1Endpoints> createWatch(CoreV1Api api) throws ApiException {
+    log.debug("Watching endpoints of service={} in namespace={}",
+        properties.getServiceName(), properties.getNamespace());
+
     return Watch.createWatch(
             apiClient,
             api.listNamespacedEndpointsCall(
