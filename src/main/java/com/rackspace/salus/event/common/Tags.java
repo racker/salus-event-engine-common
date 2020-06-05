@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Rackspace US, Inc.
+ * Copyright 2020 Rackspace US, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ public class Tags {
   public static final String RESOURCE_ID = qualify("resource_id");
   public static final String RESOURCE_LABEL = qualify("resource_label");
   public static final String MONITORING_SYSTEM = qualify("monitoring_system");
-  public static final String QUALIFIED_ACCOUNT = qualify("qualified_account");
+  public static final String TENANT = qualify("tenant");
 
   private static String qualify(String resourceId) {
     return applyNamespace(EVENT_ENGINE_TAGS, resourceId);
