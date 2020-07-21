@@ -26,6 +26,8 @@ import static com.rackspace.salus.telemetry.model.LabelNamespaces.applyNamespace
 public class Tags {
   public static final String RESOURCE_ID = qualify("resource_id");
   public static final String RESOURCE_LABEL = qualify("resource_label");
+  public static final String MONITOR_ID = qualify("monitor_id");
+  public static final String MONITORING_ZONE = qualify("monitoring_zone");
   public static final String MONITORING_SYSTEM = qualify("monitoring_system");
   public static final String TENANT = qualify("tenant");
 
