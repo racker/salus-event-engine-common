@@ -39,6 +39,10 @@ public class EventProcessor {
   private final static StateExpression FALLBACK_STATE_EXPR =
       new StateExpression().setState(TaskState.OK);
 
+  /**
+   * Used for interpolating field references in the configured message, such as
+   * "The value #{idle} is too low".
+   */
   private static final Pattern MSG_INTERPOLATE = Pattern.compile("#\\{([^}]+)}");
   private static final String MISSING_INTERPOLATION = "undefined";
 
