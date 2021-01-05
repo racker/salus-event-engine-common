@@ -16,6 +16,10 @@ public class ConsecutiveCountStateMachine<S> implements StateHolder<S> {
   S currentState;
   PendingState<S> pendingState;
 
+  /**
+   * Creates a consecutive-count state machine.
+   * @param specs the possible states to process and the desired consecutive count for each
+   */
   public ConsecutiveCountStateMachine(List<StateSpec<S>> specs) {
     if (specs == null || specs.isEmpty()) {
       throw new IllegalArgumentException("specs must be non-empty");
@@ -65,7 +69,7 @@ public class ConsecutiveCountStateMachine<S> implements StateHolder<S> {
     final S state;
     final int consecutiveCount;
 
-    public StateSpec(S state, int consecutiveCount) {
+    private StateSpec(S state, int consecutiveCount) {
       if (state == null) {
         throw new IllegalArgumentException("name is required");
       }
