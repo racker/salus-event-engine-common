@@ -3,7 +3,9 @@ package com.rackspace.salus.event.statemachines;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.rackspace.salus.event.statemachines.ConsecutiveCountStateMachine.StateSpec;
+import com.rackspace.salus.event.statemachines.MultiStateTransition.Observation;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 public class QuorumOfConsecutiveCountTest {
@@ -28,11 +30,25 @@ public class QuorumOfConsecutiveCountTest {
         .isNull();
     assertThat(sm.process("zoneB", "CRITICAL"))
         .isNotNull()
-        .isEqualTo(new StateTransition<>(null, "CRITICAL"));
+        .isEqualTo(
+            new MultiStateTransition<>()
+                .setOverall(new StateTransition<>(null, "CRITICAL"))
+                .setObservations(Map.of(
+                    "zoneA", new Observation<>().setState("CRITICAL"),
+                    "zoneB", new Observation<>().setState("CRITICAL")
+                ))
+        );
     assertThat(sm.process("zoneA", "OK"))
         .isNull();
     assertThat(sm.process("zoneB", "OK"))
         .isNotNull()
-        .isEqualTo(new StateTransition<>("CRITICAL", "OK"));
+        .isEqualTo(
+            new MultiStateTransition<>()
+                .setOverall(new StateTransition<>("CRITICAL", "OK"))
+                .setObservations(Map.of(
+                    "zoneA", new Observation<>().setState("OK"),
+                    "zoneB", new Observation<>().setState("OK")
+                ))
+        );
   }
 }
