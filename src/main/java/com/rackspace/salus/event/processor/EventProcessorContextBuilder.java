@@ -45,8 +45,9 @@ public class EventProcessorContextBuilder {
 
   private static StateHolder<TaskState> buildPerLevelStateMachine(
       EventEngineTaskParameters taskParameters) {
-    // For now, all states share the default consective count declaration.
-    // This code can be later adapted to perform asymmetric consecutive count analysis.
+    // For now, all states share the default consecutive count declaration.
+    // This code can be later adapted to perform asymmetric consecutive-count handling
+    // when a 'count' field is added to StateExpression in EventEngineTaskParameters.
     return new ConsecutiveCountStateMachine<>(
         Arrays.stream(TaskState.values())
             .map(taskState -> StateSpec.of(taskState, taskParameters.getDefaultConsecutiveCount()))
