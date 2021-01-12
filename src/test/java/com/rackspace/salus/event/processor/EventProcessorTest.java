@@ -33,7 +33,6 @@ import com.rackspace.salus.telemetry.entities.EventEngineTaskParameters.LogicalE
 import com.rackspace.salus.telemetry.entities.EventEngineTaskParameters.LogicalExpression.Operator;
 import com.rackspace.salus.telemetry.entities.EventEngineTaskParameters.StateExpression;
 import com.rackspace.salus.telemetry.entities.EventEngineTaskParameters.TaskState;
-import com.rackspace.salus.telemetry.entities.subtype.SalusEventEngineTask;
 import java.time.Instant;
 import java.util.Iterator;
 import java.util.List;
@@ -194,7 +193,7 @@ public class EventProcessorTest {
     final String resourceId = randomAlphanumeric(5);
     final String monitorId = randomAlphanumeric(5);
 
-    final EventEngineTask task = new SalusEventEngineTask()
+    final EventEngineTask task = new EventEngineTask()
         .setId(UUID.randomUUID())
         .setTenantId(tenantId)
         .setTaskParameters(new EventEngineTaskParameters()

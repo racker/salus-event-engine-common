@@ -25,7 +25,6 @@ import com.rackspace.salus.telemetry.entities.EventEngineTaskParameters.Comparat
 import com.rackspace.salus.telemetry.entities.EventEngineTaskParameters.ComparisonExpression;
 import com.rackspace.salus.telemetry.entities.EventEngineTaskParameters.StateExpression;
 import com.rackspace.salus.telemetry.entities.EventEngineTaskParameters.TaskState;
-import com.rackspace.salus.telemetry.entities.subtype.SalusEventEngineTask;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -43,7 +42,7 @@ public class EventProcessorContextBuilderTest {
     final String resourceId = randomAlphanumeric(5);
     final String monitorId = randomAlphanumeric(5);
 
-    final EventEngineTask task = new SalusEventEngineTask()
+    final EventEngineTask task = new EventEngineTask()
         .setId(UUID.randomUUID())
         .setTenantId(tenantId)
         .setTaskParameters(new EventEngineTaskParameters()
